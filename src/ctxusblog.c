@@ -1,7 +1,7 @@
 /*********************************************************************
  * $Id: //icaclient/develop/main/src/XenDesktop/usb/unix/logging/ctxusblog.c#1 $
  * 
- * Copyright 2008 Citrix Systems, Inc. All rights reserved.
+ * Copyright 2008 Citrix Systems, Inc.
  ********************************************************************/
 
 /*
