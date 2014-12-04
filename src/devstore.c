@@ -473,6 +473,45 @@ static void borrowDeviceFromVM(DevInfo *device)
     remote_unplug_device(device->VM, device->bus_num, device->dev_num);
 }
 
+static int getAutoPassthroughPolicy(int dom_id)
+{
+  const char *uuid = VMid2uuid(dom_id); /* Convert DomID to UUID, has dashes so will need to convert to xenmgr vm path */
+  if (uuid == NULL) return 0; /* If current focus DomID doesn't have a UUID or lookup fails, bad things may happen */
+
+  /* Convert UUID from dashes to underscores, for D-Bus path */
+  char uuid_underscores[42]; /* Contain the string "/vm/" followed by the UUID (length 36), plus some null padding */
+  memset(uuid_underscores,42,'\0'); /* Safety first */
+  snprintf(uuid_underscores,42,"/vm/%s",uuid);
+  uuid_underscores[12]='_'; /* Static locations, so faster than iteration */
+  uuid_underscores[17]='_';
+  uuid_underscores[22]='_';
+  uuid_underscores[27]='_';
+
+  gboolean policy = FALSE; /* Hold the policy */
+
+  /* Run the D-Bus query */
+  int result = xcdbus_get_property_bool(
+      rpc_xcbus(),
+      "com.citrix.xenclient.xenmgr", /* Service */
+      uuid_underscores, /* Object */
+      "com.citrix.xenclient.xenmgr.vm", /* Interface */
+      "usb-auto-passthrough", /* Property name */
+      &policy);
+
+  /* Check for D-Bus query problem */
+  if ( result != 1 )
+  {
+    LogError("USB Auto-Passthrough policy query issue, libxcdbus returned %d for policy query of domain %d",result,dom_id);
+  }
+
+  /* Compare policy. If true, return 1. Else, return 0 */
+  if ( policy == TRUE )
+  {
+    return 1; /* AutoPassthrough allowed by policy */
+  }
+  return 0; /* AutoPassthrough not allowed by policy or unable to query the policy */
+}
+
 /* Route a new device to the relevant domain
  * param    device               device to route
  * param    dom_id               id of domain to route device to, DEV_VM_NONE => use standard routing
@@ -520,12 +559,28 @@ static int findDeviceRoute(DevInfo *device, int dom_id)
             else
             {
                 /* Device is not a HiD, assign to VM in focus */
-                if(xcdbus_input_get_focus_domid(rpc_xcbus(), &dom_id) == 0)
+                int focus_dom_id;
+                if(xcdbus_input_get_focus_domid(rpc_xcbus(), &focus_dom_id))
+                {
+                    if (getAutoPassthroughPolicy(focus_dom_id))
+                    {
+                        LogInfo("SSSS domid=%d automatic USB passthrough allowed by policy", focus_dom_id);
+                        dom_id = focus_dom_id;
+                    }
+                    else
+                    {
+                        LogInfo("SSSS domid=%d automatic USB passthrough not allowed by policy", focus_dom_id);
+                        dom_id = DEV_VM_DOM0;
+                        uuid = DOM0_UUID;
+                    }
+                }
+                else
                 {
                     LogError("Could not query focused domain, assuming dom0");
                     dom_id = DEV_VM_DOM0;
                     uuid = DOM0_UUID;
                 }
+
                 if (is_usb_enabled(dom_id))
                 {
                     LogInfo("SSSS domid=%d is_usb_enabled=true", dom_id);
