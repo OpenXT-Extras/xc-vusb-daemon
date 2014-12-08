@@ -46,6 +46,19 @@ gboolean is_usb_enabled(int domid)
     return v;
 }
 
+gboolean is_usb_auto_passthrough(int domid)
+{
+    char *obj_path = NULL;
+    gboolean v;
+    if (!com_citrix_xenclient_xenmgr_find_vm_by_domid_ ( g_xcbus, "com.citrix.xenclient.xenmgr", "/", domid, &obj_path )) {
+        return 0;
+    }
+    if (!property_get_com_citrix_xenclient_xenmgr_vm_usb_auto_passthrough_ ( g_xcbus, "com.citrix.xenclient.xenmgr", obj_path, &v )) {
+        return 0;
+    }
+    return v;
+}
+
 gboolean has_device_grab(int domid)
 {
     char *obj_path = NULL;
