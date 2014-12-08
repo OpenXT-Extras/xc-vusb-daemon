@@ -529,6 +529,13 @@ static int findDeviceRoute(DevInfo *device, int dom_id)
                 if (is_usb_enabled(dom_id))
                 {
                     LogInfo("SSSS domid=%d is_usb_enabled=true", dom_id);
+
+                    /* Check USB auto-passthrough policy. If not allowed, retain device in Dom0 */
+                    if(!is_usb_auto_passthrough(dom_id))
+                    {
+                        dom_id = DEV_VM_DOM0;
+                        uuid = DOM0_UUID;
+                    }
                 }
                 else
                 {

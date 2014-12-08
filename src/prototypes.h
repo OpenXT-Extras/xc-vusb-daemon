@@ -18,6 +18,7 @@
 
 /* rpc.c */
 extern gboolean is_usb_enabled(int domid);
+extern gboolean is_usb_auto_passthrough(int domid);
 extern gboolean has_device_grab(int domid);
 extern xcdbus_conn_t *rpc_xcbus(void);
 extern int remote_plug_device(int domid, int bus_num, int dev_num);
