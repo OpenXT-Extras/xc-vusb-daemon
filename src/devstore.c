@@ -530,6 +530,13 @@ static int findDeviceRoute(DevInfo *device, int dom_id)
                 {
                     LogInfo("SSSS domid=%d is_usb_enabled=true", dom_id);
 
+                    /* Tools installed? If not, don't asssign, retain device in Dom0 */
+                    if(!has_pv_addons(dom_id))
+                    {
+                        dom_id = DEV_VM_DOM0;
+                        uuid = DOM0_UUID;
+                    }
+
                     /* Check USB auto-passthrough policy. If not allowed, retain device in Dom0 */
                     if(!is_usb_auto_passthrough(dom_id))
                     {

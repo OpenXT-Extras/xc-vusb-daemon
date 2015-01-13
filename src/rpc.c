@@ -33,6 +33,19 @@ static DBusGConnection *g_glib_dbus_conn = NULL;
 /******************vvvvvvvvv******************/
 #include "rpcgen/ctxusb_daemon_server_obj.h"
 
+gboolean has_pv_addons(int domid)
+{
+    char *obj_path = NULL;
+    gboolean v;
+    if (!com_citrix_xenclient_xenmgr_find_vm_by_domid_ ( g_xcbus, "com.citrix.xenclient.xenmgr", "/", domid, &obj_path )) {
+        return 0;
+    }
+    if (!property_get_com_citrix_xenclient_xenmgr_vm_pv_addons_ ( g_xcbus, "com.citrix.xenclient.xenmgr", obj_path, &v )) {
+        return 0;
+    }
+    return v;
+}
+
 gboolean is_usb_enabled(int domid)
 {
     char *obj_path = NULL;
