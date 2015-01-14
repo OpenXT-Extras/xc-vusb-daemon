@@ -17,6 +17,7 @@
  */
 
 /* rpc.c */
+extern gboolean has_pv_addons(int domid);
 extern gboolean is_usb_enabled(int domid);
 extern gboolean is_usb_auto_passthrough(int domid);
 extern gboolean has_device_grab(int domid);
