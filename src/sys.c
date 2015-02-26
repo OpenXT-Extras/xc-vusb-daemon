@@ -156,7 +156,7 @@ static int catFileString(const char *dir, const char *file, Buffer *buffer)
 /* Bind all the single given device or interface to dom0 drivers
  * param    sysName              device or interface's system name
  */
-void bindToDom0(const char *sysName)
+void __bindToDom0(const char *caller, const char *sysName)
 {
     FILE *file;
 
@@ -170,7 +170,7 @@ void bindToDom0(const char *sysName)
         return;
     }
 
-    LogInfo("Binding %s to dom0", sysName);
+    LogInfo("Caller %s: binding %s to dom0", caller, sysName);
     fprintf(file, "%s", sysName);
     fclose(file);
 }

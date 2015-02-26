@@ -601,6 +601,9 @@ static void routeDevice(DevInfo *device, int dom_id)
     }
 
     remote_report_dev_change(device->id);
+
+    device->VM = routed_dom_id;
+    LogInfo("Device id: %d routed to domain id: %d", device->id, device->VM);
 }
 
 
