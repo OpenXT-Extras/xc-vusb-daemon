@@ -98,7 +98,8 @@ extern void dumpVMs(Buffer *buffer);
 extern const char *VMid2uuid(int domid);
 extern int VMuuid2id(const char *uuid);
 /* sys.c */
-extern void bindToDom0(const char *sysName);
+extern void __bindToDom0(const char *caller, const char *sysName);
+#define bindToDom0(s) __bindToDom0(__FUNCTION__, (s))
 extern int bindToUsbhid(const char *bus_id);
 extern void unbindAllFromDom0(const char *sysName);
 extern void unbindAllFromDom0ExceptRootDevice(const char *sysName);
