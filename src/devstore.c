@@ -528,7 +528,7 @@ static int findDeviceRoute(DevInfo *device, int dom_id)
                 }
                 if (is_usb_enabled(dom_id))
                 {
-                    LogInfo("SSSS domid=%d is_usb_enabled=true", dom_id);
+                    LogInfo("Find route - domid=%d is_usb_enabled=true", dom_id);
 
                     /* Tools installed? If not, don't asssign, retain device in Dom0
                      * Or
@@ -541,7 +541,7 @@ static int findDeviceRoute(DevInfo *device, int dom_id)
                 }
                 else
                 {
-                    LogInfo("SSSS domid=%d is_usb_enabled=false", dom_id);
+                    LogInfo("Find route - domid=%d is_usb_enabled=false", dom_id);
                     dom_id = DEV_VM_DOM0;
                 }
             }
@@ -592,6 +592,8 @@ static void routeDevice(DevInfo *device, int dom_id)
 	    suspendDevice(device->sysName);
 	  }
 	}
+    	device->VM = routed_dom_id;
+    	LogInfo("Device id: %d routed to dom0", device->id);
     }
     else
     {
@@ -601,9 +603,6 @@ static void routeDevice(DevInfo *device, int dom_id)
     }
 
     remote_report_dev_change(device->id);
-
-    device->VM = routed_dom_id;
-    LogInfo("Device id: %d routed to domain id: %d", device->id, device->VM);
 }
 
 
