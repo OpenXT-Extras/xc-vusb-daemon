@@ -297,6 +297,14 @@ void remote_report_dev_change(int dev_id)
                                                               "/", dev_id);
 }
 
+void remote_report_optical_device_detected()
+{
+    assert(g_glib_dbus_conn != NULL);
+    notify_com_citrix_xenclient_usbdaemon_optical_device_detected(g_xcbus,
+                                                                  "com.citrix.xenclient.usbdaemon", 
+                                                                  "/");
+}
+
 
 void rpc_init()
 {
