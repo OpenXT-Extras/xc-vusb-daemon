@@ -941,6 +941,28 @@ void checkAllKeyboard(void)
     }
 }
 
+/* Request a delayed refresh of the host ui model and usb devices after we 
+ * detect a new usb device is actually an optical device.  Gives kernel time
+ * to make the /dev/sr node.
+ */ 
+void delayed_host_refresh(int dev_id)
+{
+    int cpid = fork();
+
+	if (cpid == -1)
+	{
+		LogError("Fork Failed");
+		return;
+	}
+
+    if (cpid == 0)
+    {
+        sleep(5);  		//seems a sufficient delay
+        remote_report_host_refresh_request(dev_id);
+        _exit(0);
+    }
+
+}
 
 
 /**** Functions used to collect information about newly plugged in devices ****/
@@ -963,7 +985,10 @@ void checkDeviceOptical(const char *sysName, int host)
                 return;
 
             if(isHostOptical(host, sysName) == 0)  /* Device is optical */
+			{
                 p->type = DEV_TYPE_EXT_CD;
+				delayed_host_refresh(p->id);
+			}
             else  /* Device is not optical */
                 p->type = DEV_TYPE_NORMAL;
 
