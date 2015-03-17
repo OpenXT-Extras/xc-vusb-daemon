@@ -297,6 +297,14 @@ void remote_report_dev_change(int dev_id)
                                                               "/", dev_id);
 }
 
+void remote_report_host_refresh_request(int dev_id)
+{
+    assert(g_glib_dbus_conn != NULL);
+    notify_com_citrix_xenclient_usbdaemon_host_refresh(g_xcbus,
+                                                       "com.citrix.xenclient.usbdaemon", 
+	                                                   "/");
+}
+
 
 void rpc_init()
 {

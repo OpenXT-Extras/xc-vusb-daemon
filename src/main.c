@@ -92,6 +92,11 @@ static int watch(void)
     return 2;
 }                                          
 
+void cleanup(int sig_num)
+{
+	wait();
+}
+
 
 int main(int argc, char **argv)
 {
@@ -101,6 +106,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
+	signal(SIGCHLD, cleanup);
     /* Initialise stuff */
     event_init();
     xenstore_init();
