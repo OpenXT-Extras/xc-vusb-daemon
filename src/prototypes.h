@@ -28,6 +28,7 @@ extern int remote_query_devices(int domid, IBuffer *device_ids);
 extern void remote_report_rejected(const char *dev_name, const char *cause);
 extern void remote_report_all_devs_change(void);
 extern void remote_report_dev_change(int dev_id);
+extern void remote_report_optical_device_detected(void);
 extern void rpc_init(void);
 /* main.c */
 extern int main(int argc, char **argv);

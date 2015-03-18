@@ -1317,6 +1317,22 @@ void udevMonHandler(void)
             trimEndBuffer(&device, ':');
             processNewHidraw(endPath, device.data);
         }
+        else if(type != NULL && strcmp(type, "disk") == 0)
+        {
+            const char *id_type = udev_device_get_property_value(dev, "ID_CDROM");
+
+            /* New optical device detected
+             * At this point, send dbus signal to refresh
+             * the host model in the ui so the usb device
+             * appears properly as a cd device automatically.
+             */
+            if(id_type != NULL && strcmp(id_type, "1") == 0)
+            {
+                LogInfo("Detected new optical device %s", endPath);
+                remote_report_optical_device_detected();
+            }
+        }
+
     }
     else if(action != NULL && strcmp(action, "remove") == 0)
     {
@@ -1386,6 +1402,7 @@ int initSys(void)
     udev_monitor_filter_add_match_subsystem_devtype(udev_mon, "usb", NULL);
     udev_monitor_filter_add_match_subsystem_devtype(udev_mon, "scsi", NULL);
     udev_monitor_filter_add_match_subsystem_devtype(udev_mon, "hidraw", NULL);
+    udev_monitor_filter_add_match_subsystem_devtype(udev_mon, "block", NULL);
     udev_monitor_enable_receiving(udev_mon);
     udev_fd = udev_monitor_get_fd(udev_mon);
 
