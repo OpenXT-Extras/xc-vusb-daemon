@@ -1,10 +1,8 @@
-#
-#
-# README:
-#
-# $Id:$
-#
-# $Log:$
-#
-#
-#
+----------------------------
+---- xc-vusb-daemon.git ----
+----------------------------
+
+This is the deprecated PV USB daemon. It was in service up to August 15, 2015.
+The new daemon that supersedes this one can be found here:
+
+https://github.com/OpenXT/vusb-daemon
